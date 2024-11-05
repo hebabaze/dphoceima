@@ -3,3 +3,6 @@ pandas
 pyperclip
 openpyxl
 ninja
+setuptools
+wheel
+scikit-build
