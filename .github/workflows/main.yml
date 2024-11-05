@@ -9,7 +9,7 @@ on:
     branches:
       - master
       - main
-  workflow_dispatch:  # Allows manual triggering of the workflow
+  workflow_dispatch:
 
 env:
   BUILD_NUMBER: 1
@@ -38,13 +38,15 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install build essentials and dependencies
-        run: sudo apt-get update && sudo apt-get install -y \
-          build-essential \
-          libgtk-3-dev \
-          libatlas-base-dev \
-          gfortran \
-          python3-dev \
-          meson
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            libgtk-3-dev \
+            libatlas-base-dev \
+            gfortran \
+            python3-dev \
+            meson || { echo 'Failed to install packages'; exit 1; }
 
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
@@ -69,7 +71,7 @@ jobs:
       - name: Flet Build APK
         run: |
           flutter config --no-analytics
-          flet build apk --verbose --build-number=${{ env.BUILD_NUMBER }} --build-version=${{ env.BUILD_VERSION }}
+          flet build apk --verbose --build-number=$BUILD_NUMBER --build-version=$BUILD_VERSION
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4.3.4
