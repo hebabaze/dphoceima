@@ -26,6 +26,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
       - name: Setup Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
@@ -42,14 +48,11 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
-      - name: Setup Android SDK Tools
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3.2.1
-
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4.2.1
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          cmdline-tools-version: '11.0'  # Use the latest cmdline-tools version
+          accept-android-sdk-licenses: true  # Automatically accept licenses
 
       - name: Flet Build APK
         run: |
