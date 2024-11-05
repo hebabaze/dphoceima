@@ -20,7 +20,7 @@ def main(page:Page):
             title=Text(f"Options pour {contact_name}",text_align=TextAlign.CENTER,),
                 actions=[Column([
                     TextButton("Appeler", icon=icons.ADD_CALL,on_click=lambda _: page.launch_url(f"tel:{phone_number}")),
-                    TextButton(content=Row([Image(src="img/wtsp.png", height=24, width=24),Text("WhatsApp")]),
+                    TextButton(content=Row([Image(src="assets/wtsp.png", height=24, width=24),Text("WhatsApp")]),
                            on_click=lambda _: page.launch_url(f"https://wa.me/212{phone_number[1:]}"),),
                     TextButton("Copier le numéro",icon=icons.CONTENT_COPY, on_click=lambda _: pyperclip.copy(phone_number)),],spacing=0),
                     TextButton("Fermer", on_click=lambda _: page.close(options_dialog))
@@ -109,7 +109,7 @@ def main(page:Page):
                     [
                         Column(
                             controls=[
-                                Image(src=f"img/men.png"),
+                                Image(src=f"assets/men.png"),
                                 Text(
                                     "الدليل الهاتفي للمديرية الإقليمية الحسيمة",
                                     color='black',
