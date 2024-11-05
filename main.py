@@ -3,7 +3,6 @@ import pandas as pd
 import pyperclip
 def main(page:Page):
     # Lire le fichier Excel et stocker les données dans un DataFrame
-    # df = pd.read_excel("contact.xlsx", sheet_name="ghr")
     df = pd.read_excel("contact.xlsx", sheet_name="ghr", dtype={'mobile': str})
     # Ensure the 'mobile' column is treated as strings to keep leading zeros
     df['mobile'] = df['mobile'].astype(str)
