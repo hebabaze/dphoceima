@@ -20,60 +20,54 @@ env:
 
 jobs:
   build-apk:
-    runs-on: ubuntu-22.04  # Specify a stable runner
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Debug PATH and Environment
-      run: |
-        echo $PATH
-        ls /bin
-        ls /usr/bin
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Setup Python ${{ env.PYTHON_VERSION }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
 
-    - name: Upgrade pip
-      run: python -m pip install --upgrade pip
+      - name: Install Python Dependencies
+        run: pip install -r requirements.txt
 
-    - name: Install Python Dependencies
-      run: pip install -r requirements.txt
+      - name: Setup Flutter ${{ env.FLUTTER_VERSION }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
 
-    - name: Setup Flutter ${{ env.FLUTTER_VERSION }}
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+      - name: Install Android SDK without sudo
+        run: |
+          mkdir -p "$ANDROID_HOME/cmdline-tools"  # Use full path
+          curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip commandlinetools.zip -d "$ANDROID_HOME/cmdline-tools"
+          mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+        env:
+          PATH: "$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
 
-    - name: Install Android SDK
-      run: |
-        mkdir -p $ANDROID_HOME/cmdline-tools
-        curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        unzip commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
-        mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
-      env:
-        PATH: $PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4.2.1
+        with:
+          distribution: 'temurin'
+          java-version: '21'
 
-    - name: Setup Java JDK
-      uses: actions/setup-java@v4.2.1
-      with:
-        distribution: 'temurin'
-        java-version: '21'
+      - name: Flet Build APK
+        run: |
+          flutter config --no-analytics
+          flet build apk --verbose --build-number=$BUILD_NUMBER --build-version=$BUILD_VERSION
 
-    - name: Flet Build APK
-      run: |
-        flutter config --no-analytics
-        flet build apk --verbose --build-number=$BUILD_NUMBER --build-version=$BUILD_VERSION
-
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4.3.4
-      with:
-        name: apk-build-artifact
-        path: build/apk
-        if-no-files-found: warn
-        overwrite: false
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: apk-build-artifact
+          path: build/apk
+          if-no-files-found: warn
+          overwrite: false
