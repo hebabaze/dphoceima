@@ -44,14 +44,18 @@ jobs:
 
       - name: Install Android SDK without sudo
         run: |
-          mkdir -p "$ANDROID_HOME/cmdline-tools"  # Use full path
+          set -e  # Exit immediately if a command exits with a non-zero status
+          if [ ! -d "${ANDROID_HOME}/cmdline-tools" ]; then
+            echo "Creating directory for Android cmdline-tools"
+            cp -r /dev/null "${ANDROID_HOME}/cmdline-tools" # This will create an empty file to satisfy the condition
+          fi
           curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip commandlinetools.zip -d "$ANDROID_HOME/cmdline-tools"
-          mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+          unzip commandlinetools.zip -d "${ANDROID_HOME}/cmdline-tools"
+          mv "${ANDROID_HOME}/cmdline-tools/cmdline-tools" "${ANDROID_HOME}/cmdline-tools/latest"
+          yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --licenses
+          "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-33" "build-tools;33.0.2"
         env:
-          PATH: "$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
+          PATH: "${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools"
 
       - name: Setup Java JDK
         uses: actions/setup-java@v4.2.1
