@@ -6,3 +6,4 @@ ninja
 setuptools
 wheel
 scikit-build
+numpy==1.24.3
