@@ -16,7 +16,7 @@ env:
   BUILD_VERSION: 1.0.0
   PYTHON_VERSION: 3.12.2
   FLUTTER_VERSION: 3.22.2
-  ANDROID_HOME: /usr/local/lib/android
+  ANDROID_HOME: ${{ github.workspace }}/android-sdk
 
 jobs:
   build-apk:
@@ -42,13 +42,11 @@ jobs:
       with:
         flutter-version: ${{ env.FLUTTER_VERSION }}
 
-    - name: Install Android SDK
+    - name: Install Android SDK without sudo
       run: |
-        apt-get update
-        apt-get install -y wget unzip
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
         mkdir -p $ANDROID_HOME/cmdline-tools
-        unzip -d $ANDROID_HOME/cmdline-tools commandlinetools-linux-9477386_latest.zip
+        curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+        unzip commandlinetools.zip -d $ANDROID_HOME/cmdline-tools
         mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
