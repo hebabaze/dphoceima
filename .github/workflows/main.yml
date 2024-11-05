@@ -51,7 +51,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3.2.1
         with:
-          cmdline-tools-version: '11.0'  # Use the latest cmdline-tools version
+          cmdline-tools-version: '9.0'  # Use an older, stable version like 9.0
           accept-android-sdk-licenses: true  # Automatically accept licenses
 
       - name: Flet Build APK
