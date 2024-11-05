@@ -44,10 +44,6 @@ jobs:
 
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v3.2.1
-        with:
-          api-level: 33
-          build-tools: 33.0.2
-          cmdline-tools: latest
 
       - name: Setup Java JDK
         uses: actions/setup-java@v4.2.1
