@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.11'  # Use the version compatible with Flet
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           pip install flet pandas pyperclip openpyxl  # Install required libraries
           pip install --upgrade cython  # Install or upgrade Cython
@@ -35,9 +35,9 @@ jobs:
 
       - name: Set up Android SDK and Dependencies
         run: |
-          echo "Installing Android SDK Command Line Tools..."
+          echo "Installing Android SDK Command Line Tools and other dependencies..."
           sudo apt-get update
-          sudo apt-get install -y openjdk-8-jdk wget unzip ninja-build libgtk-3-dev  # Install required packages
+          sudo apt-get install -y openjdk-8-jdk wget unzip build-essential ninja-build libgtk-3-dev  # Install required packages
 
           # Create directories for the SDK
           export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
