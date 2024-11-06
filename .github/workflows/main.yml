@@ -1,47 +1,72 @@
-name: Build Flet APK
+name: Build APK
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main  # Change if your default branch is different
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-apk:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Set Up Python
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          python-version: '3.11'
+          python-version: '3.11'  # Use the version compatible with Flet
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install flet pandas pyperclip openpyxl
+          pip install flet pandas pyperclip openpyxl  # Install required libraries
+          pip install --upgrade cython  # Install or upgrade Cython
+          pip install setuptools wheel cython  # Ensure all build tools are available
 
-      - name: Set Up Flutter
-        uses: actions/setup-flutter@v2
-        with:
-          flutter-version: 'stable'
-
-      - name: Set Up Android SDK
-        uses: actions/setup-android@v3
-        with:
-          api-level: 33
-          sdk-root: "$HOME/Android/Sdk"
-
-      - name: Configure Environment Variables
+      - name: Install build tools and dependencies
         run: |
-          export PATH="$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$PATH"
+          sudo apt-get update
+          sudo apt-get install -y build-essential ninja-build meson gcc g++ clang  # Install required compilers and build tools
+
+      - name: Install Flutter
+        run: |
+          git clone https://github.com/flutter/flutter.git -b stable
+          echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
+          echo "Flutter installed. Verifying installation..."
+          flutter/bin/flutter doctor  # Check the Flutter installation
+
+      - name: Set up Android SDK and Dependencies
+        run: |
+          echo "Installing Android SDK Command Line Tools and other dependencies..."
+          sudo apt-get update
+          sudo apt-get install -y openjdk-8-jdk wget unzip build-essential ninja-build libgtk-3-dev  # Install required packages
+
+          # Create directories for the SDK
+          export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+
+          # Download and install Command Line Tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O commandlinetools.zip
+          unzip commandlinetools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+          rm commandlinetools.zip
+
+          # Set up the tools directory
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/bin:$PATH
+
+          # Install SDK and NDK using sdkmanager
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/bin/sdkmanager --install "platform-tools" "platforms;android-33" "ndk;25.2.9519653"
 
       - name: Build APK
         run: |
-          flutter build apk --release
+          export SERIOUS_PYTHON_P4A_DIST=$HOME/.python-for-android/dists/mydist  # Path to custom Python distribution
+          flet build apk  # Build the APK using Flet
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4  # Updated to version 4
         with:
           name: apk
-          path: build/*.apk
+          path: build/*.apk  # Adjust the path if the APK output location is different
