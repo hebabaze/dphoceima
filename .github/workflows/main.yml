@@ -19,16 +19,29 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'  # Specify the Python version you need
+          python-version: '3.11'  # Use the version compatible with Flet
 
       - name: Install dependencies
         run: |
           pip install flet pandas pyperclip openpyxl  # Install required libraries
+          pip install --upgrade cython  # Install or upgrade Cython
+
+      - name: Set up Android SDK
+        run: |
+          echo "Installing Android SDK and NDK..."
+          sudo apt-get update
+          sudo apt-get install -y openjdk-8-jdk
+          export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+          export NDK_VERSION=25.2.9519653
+          export SDK_VERSION=android-33
+          mkdir -p $ANDROID_SDK_ROOT
+          # Install SDK and NDK using sdkmanager
+          sdkmanager --install "ndk;$NDK_VERSION" "platforms;$SDK_VERSION"
 
       - name: Build APK
         run: |
-          # Build the APK using Flet
-          python -m flet build --target=apk  # Adjust if necessary based on your Flet setup
+          export SERIOUS_PYTHON_P4A_DIST=$HOME/.python-for-android/dists/mydist  # Path to custom Python distribution
+          flet build apk  # Build the APK using Flet
 
       - name: Upload APK
         uses: actions/upload-artifact@v4  # Updated to version 4
