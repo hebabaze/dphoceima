@@ -33,11 +33,11 @@ jobs:
           echo "Flutter installed. Verifying installation..."
           flutter/bin/flutter doctor  # Check the Flutter installation
 
-      - name: Set up Android SDK
+      - name: Set up Android SDK and Dependencies
         run: |
           echo "Installing Android SDK Command Line Tools..."
           sudo apt-get update
-          sudo apt-get install -y openjdk-8-jdk wget unzip
+          sudo apt-get install -y openjdk-8-jdk wget unzip ninja-build libgtk-3-dev  # Install required packages
 
           # Create directories for the SDK
           export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
