@@ -21,16 +21,11 @@ jobs:
         with:
           python-version: '3.11'  # Use the version compatible with Flet
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
+          pip install --upgrade pip setuptools  # Upgrade pip and setuptools
           pip install flet pandas pyperclip openpyxl  # Install required libraries
           pip install --upgrade cython  # Install or upgrade Cython
-          pip install setuptools wheel cython  # Ensure all build tools are available
-
-      - name: Install build tools and dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential ninja-build meson gcc g++ clang  # Install required compilers and build tools
 
       - name: Install Flutter
         run: |
@@ -43,7 +38,7 @@ jobs:
         run: |
           echo "Installing Android SDK Command Line Tools and other dependencies..."
           sudo apt-get update
-          sudo apt-get install -y openjdk-8-jdk wget unzip build-essential ninja-build libgtk-3-dev  # Install required packages
+          sudo apt-get install -y openjdk-8-jdk wget unzip build-essential ninja-build libgtk-3-dev libatlas-base-dev libopenblas-dev  # Install required packages
 
           # Create directories for the SDK
           export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
@@ -58,7 +53,7 @@ jobs:
           export PATH=$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/bin:$PATH
 
           # Install SDK and NDK using sdkmanager
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/bin/sdkmanager --install "platform-tools" "platforms;android-33" "ndk;25.2.9519653"
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/bin/sdkmanager --install "platforms;android-33" "ndk;25.1.8937393"  # Specify NDK version here
 
       - name: Build APK
         run: |
