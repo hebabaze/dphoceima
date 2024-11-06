@@ -38,7 +38,12 @@ jobs:
           ./gradlew assembleDebug  # Build the APK (you can change to assembleRelease for release builds)
 
       - name: Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4  # Updated to version 4
         with:
           name: apk
           path: android/app/build/outputs/apk/debug/app-debug.apk  # Adjust the path if needed
+
+      - name: Download APK
+        uses: actions/download-artifact@v4  # Example of downloading, if needed
+        with:
+          name: apk
