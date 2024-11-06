@@ -35,17 +35,17 @@ jobs:
           # Create directories for the SDK
           export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
           mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-          
+
           # Download and install Command Line Tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O commandlinetools.zip
           unzip commandlinetools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
           rm commandlinetools.zip
 
           # Set up the tools directory
-          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/bin:$PATH
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/bin:$PATH
 
           # Install SDK and NDK using sdkmanager
-          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --install "platform-tools" "platforms;android-33" "ndk;25.2.9519653"
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools/bin/sdkmanager --install "platform-tools" "platforms;android-33" "ndk;25.2.9519653"
 
       - name: Build APK
         run: |
