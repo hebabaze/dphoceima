@@ -3,7 +3,8 @@ import pandas as pd
 import pyperclip
 def main(page:Page):
     # Lire le fichier Excel et stocker les données dans un DataFrame
-    df = pd.read_excel("contact.xlsx", sheet_name="ghr", dtype={'mobile': str})
+    # df = pd.read_excel("contact.xlsx", sheet_name="ghr")
+    df = pd.read_excel("assets/contact.xlsx", sheet_name="ghr", dtype={'mobile': str})
     # Ensure the 'mobile' column is treated as strings to keep leading zeros
     df['mobile'] = df['mobile'].astype(str)
     # Créer la liste pour afficher les contacts
@@ -219,8 +220,7 @@ def main(page:Page):
                 )
             view.bgcolor = '#ffd966'
             page.views.append(view)
-            print("Len Page View :",len(page.views))
-            print("page.views[-1]:",page.views[-1])
+
 # Inspecteurs et conseiller Page --------------------------------------------------------------------------------------------------#
         if page.route == "/inspectorcons":
             view2=View(
@@ -293,4 +293,4 @@ def main(page:Page):
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     page.go(page.route)
-app(main)
+app(target=main,assets_dir='assets/')
