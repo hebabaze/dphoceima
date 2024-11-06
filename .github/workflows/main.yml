@@ -28,15 +28,24 @@ jobs:
 
       - name: Set up Android SDK
         run: |
-          echo "Installing Android SDK and NDK..."
+          echo "Installing Android SDK Command Line Tools..."
           sudo apt-get update
-          sudo apt-get install -y openjdk-8-jdk
+          sudo apt-get install -y openjdk-8-jdk wget unzip
+
+          # Create directories for the SDK
           export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
-          export NDK_VERSION=25.2.9519653
-          export SDK_VERSION=android-33
-          mkdir -p $ANDROID_SDK_ROOT
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+          
+          # Download and install Command Line Tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O commandlinetools.zip
+          unzip commandlinetools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+          rm commandlinetools.zip
+
+          # Set up the tools directory
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/bin:$PATH
+
           # Install SDK and NDK using sdkmanager
-          sdkmanager --install "ndk;$NDK_VERSION" "platforms;$SDK_VERSION"
+          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --install "platform-tools" "platforms;android-33" "ndk;25.2.9519653"
 
       - name: Build APK
         run: |
